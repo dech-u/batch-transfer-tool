@@ -1,0 +1,79 @@
+@media screen and (max-width: 991px) {
+    .navbar .listItems {
+        display: none;
+    }
+
+    .navbar .hamburg {
+        display: block;
+    }
+
+    .navbar .loginWrapper {
+        display: none;
+    }
+
+    .offcanvas .loginWrapper {
+        display: block;
+    }
+
+    .navbar .offcanvas .listItems {
+        display: block;
+        margin-top: -16px;
+    }
+
+    .navbar .offcanvas .listItems li {
+        margin: 20px 0px;
+    }
+
+    .navbar .dropdownListItem {
+        margin: 0px !important;
+    }
+
+    .navbar .navLogo img {
+        width: 100%;
+    }
+
+    .mySwiper .swiperImage {
+        height: 400px;
+    }
+
+}
+
+
+@media screen and (min-width: 992px) and (max-width: 1399px) {
+
+    .flex_column_center,
+    .ourApp .flex_column_center,
+    .contactUs .flex_column_center {
+        padding: 0px 200px;
+    }
+}
+
+@media screen and (min-width: 768px) and (max-width: 991px) {
+
+    .flex_column_center,
+    .ourApp .flex_column_center,
+    .contactUs .flex_column_center {
+        padding: 0px 100px;
+    }
+}
+
+@media screen and (min-width: 576px) and (max-width: 767px) {
+
+    .flex_column_center,
+    .ourApp .flex_column_center,
+    .contactUs .flex_column_center {
+        padding: 0px 50px;
+    }
+}
+
+@media screen and (max-width: 575px) {
+
+    .flex_column_center,
+    .ourApp .flex_column_center,
+    .contactUs .flex_column_center {
+        align-items: start;
+        justify-content: flex-start;
+        text-align: start;
+        padding: 0px 0px;
+    }
+}

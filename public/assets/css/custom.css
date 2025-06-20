@@ -1,0 +1,270 @@
+.remove-elective-subject {
+    position: absolute;
+    right: 20px;
+    margin-top: 3px;
+}
+
+#external-events {
+    z-index: 2;
+    width: 150px;
+    padding: 0 10px;
+    border: 1px solid #ccc;
+    background: #eee;
+}
+
+#external-events .fc-event {
+    cursor: move;
+    margin: 3px 0;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+}
+
+.fc-customButton-button {
+    font-size: 13px !important;
+    position: absolute;
+    top: 60px;
+    left: 50%;
+    transform: translateY(-50%);
+}
+
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group > label {
+    margin-bottom: 10px;
+}
+
+#delete-modal .modal-footer > .btn {
+
+    border-radius: 3px !important;
+    padding: 0 8px !important;
+    font-size: 15px;
+}
+
+.fc-scroller {
+    overflow-y: hidden !important;
+}
+
+.context-menu {
+    position: absolute;
+    z-index: 1000;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.3);
+    padding: 5px;
+}
+
+.context-menu ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+.context-menu ul > li {
+    display: block;;
+    padding: 5px 15px;
+    list-style-type: none;
+    color: #333;
+    cursor: pointer;
+    margin: 0 auto;
+    transition: 0.10s;
+    font-size: 13px;
+}
+
+.context-menu ul > li:hover {
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 2px;
+}
+
+/*.fa, .fas {*/
+/*    font-size: 13px;*/
+/*    margin-right: 4px;*/
+/*}*/
+
+.no-header-toolbar .fc-header-toolbar.fc-toolbar {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.fc-h-event {
+    border: none;
+}
+
+.remove-timetable {
+    padding: 2px 3px;
+}
+
+.remove-timetable:hover {
+    background: white;
+    color: black;
+    border-radius: 10px;
+}
+
+label.filter-menu {
+    font-size: 13px;
+    color: #7c7c7c;
+    font-weight: 500;
+    position: absolute;
+    top: -8px;
+    /*left: 27px;*/
+    /*left: 1%;*/
+    background: #fff;
+    /*margin-bottom: 0;*/
+    margin-left: 5px;
+    padding: 0 5px;
+    z-index: 99;
+    border-radius: 20px;
+}
+
+/*.select2-container--default.select2-container--focus .select2-selection--multiple {*/
+/*    height: 45px;*/
+/*}*/
+
+/*.select2-container .select2-selection--multiple {*/
+/*    min-height: 45px;*/
+/*}*/
+
+.w-fit-content {
+    width: fit-content;
+}
+
+.select2-container--default .select2-selection--single {
+    padding: 0.94rem 0.6rem !important;
+}
+
+.select2-container--default .select2-selection--multiple {
+    padding: 0.34rem 0.6rem !important;
+}
+
+.select2-search__field::placeholder {
+    color: #444;
+    font-size: 0.8125rem;
+}
+
+.asColorPicker-alpha {
+    display: none;
+}
+
+.remove-number-increment::-webkit-inner-spin-button,
+.remove-number-increment::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+.total_paidable_amount {
+    background-color: lightgray;
+}
+.dashboard-description {
+    font-size: 13px;
+}
+.v-scroll {
+    height: 385px;
+    overflow-y: scroll;
+}
+.custom-card-body {
+    padding: 1.25rem !important;
+}
+.image-tile img {
+    height: 200px;
+    object-fit: cover;
+}
+.text-wrap div {
+    white-space: normal !important;
+}
+
+.package-type-badge {
+    position: absolute;
+    left: auto;
+    right: -10px;
+    clip-path: polygon(50% 0%,100% 0%,100% 100%,0% 100%,14% 52%,0% 0%);
+    width: 130px;
+    height: 38px;
+    top: 8px;
+    color: white !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+}
+.package-type-badge{
+    right: -2px;
+}
+
+.postpaid-color {
+    background: var(--primary-color);
+}
+.prepaid-color {
+    background: var(--secondary-color);
+}
+
+.addon-border-primary {
+    overflow: hidden;
+}
+.addon-ribbon {
+    font: bold 15px sans-serif;
+    color: #333;
+    text-align: center;
+    -webkit-transform: rotate(-45deg);
+    -moz-transform:    rotate(-45deg);
+    -ms-transform:     rotate(-45deg);
+    -o-transform:      rotate(-45deg);
+    position: absolute;
+    padding: 7px 0;
+    top: 15px;
+    left: -30px;
+    width: 120px;
+    background-color: #ff0000;
+    color: #fff;
+}
+.sidebar .nav .nav-item .nav-link i.menu-icon {
+    margin-left: 5px !important;
+    width: 30px;
+}
+.sidebar .nav .nav-item {
+    padding: 0 1.25rem !important;
+}
+@media (min-width: 992px) {
+    .sidebar-icon-only .sidebar .nav .nav-item {
+        position: relative;
+        padding: 0 !important;
+    }
+}
+.sidebar .nav .nav-item .nav-link i.menu-arrow {
+    font-size: 1.5rem !important;
+}
+.student-id-card-demo {
+    position: fixed;
+    width: -webkit-fill-available;
+    margin-right: 20px;
+}
+
+.action-column-dropdown-menu {
+    left: -2rem !important;
+}
+.action-column-menu {
+
+    /* position: absolute; */
+    /* transform: translate(-50%, -50%); */
+
+    /* position: absolute;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+    z-index: 1000; */
+
+    /* top: 50%;
+    left: 50%; */
+}
+
+.action-td-cell {
+    /* position: absolute; */
+    /* border: 0px !important; */
+    /* top: 40px; */
+}

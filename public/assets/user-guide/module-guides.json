@@ -1,0 +1,67 @@
+{
+    "superadmin": {
+        "title": "Super Admin Guide",
+        "Manage_Schools": [
+            {
+                "step": 1,
+                "title": "Basic Information",
+                "description": "Fill in the school's basic information including name, email, and phone number.",
+                "icon": "mdi mdi-information"
+            },
+            {
+                "step": 2,
+                "title": "School Logo",
+                "description": "Upload your school logo - this will appear on reports and the school portal.",
+                "icon": "mdi mdi-image"
+            },
+            {
+                "step": 3,
+                "title": "School Details",
+                "description": "Add your school's tagline and complete address details.",
+                "icon": "mdi mdi-office-building"
+            },
+            {
+                "step": 4,
+                "title": "Domain Setup",
+                "description": "Set up your school code prefix and choose domain type (default or custom).",
+                "icon": "mdi mdi-web"
+            },
+            {
+                "step": 5,
+                "title": "Finish Setup",
+                "description": "Click \"Submit\" to create your school profile and proceed with the setup.",
+                "icon": "mdi mdi-check-circle"
+            }
+        ],
+        "SchoolInquiry": [
+            {
+                "step": 1,
+                "title": "Basic Information",
+                "description": "Fill in the school's basic information including name, email, and phone number.",
+                "icon": "mdi mdi-information"
+            }
+        ]
+    },
+    "schoolsadmin": {
+        "title": "Schools Admin Guide",
+        "Academics": [
+            {
+                "step": 1,
+                "title": "Basic Information",
+                "description": "Fill in the school's basic information including name, email, and phone number.",
+                "icon": "mdi mdi-information"
+            }
+        ]
+    },
+    "teacherpanel": {
+        "title": "Teacher Panel Guide",
+        "ManageStudents": [
+            {
+                "step": 1,
+                "title": "Basic Information",
+                "description": "Fill in the school's basic information including name, email, and phone number.",
+                "icon": "mdi mdi-information"
+            }
+        ]
+    }
+} 

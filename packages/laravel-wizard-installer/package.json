@@ -1,0 +1,14 @@
+{
+  "name": "laravel-wizard-installer",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/dacoto/laravel-wizard-installer.git",
+  "author": "David Cortés <cortestoledanodavid@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "tailwindcss": "^3.0.24"
+  },
+  "scripts": {
+    "build": "npx tailwindcss -i resources/css/tailwind.css -o public/styles.css --minify"
+  }
+}
