@@ -418,6 +418,46 @@
 
 </div>
 
+{{-- Chapa --}}
+<div class="border border-secondary rounded-lg mb-3">
+    <h3 class="col-12 page-title mt-3 ">
+        {{ __('Chapa') }}
+    </h3>
+    <div class="row my-4 mx-1">
+        <div class="form-group col-sm-12 col-md-6">
+            <label for="chapa_status">{{ __('status') }} <span class="text-danger">*</span></label>
+            <select name="gateway[Chapa][status]" id="chapa_status" class="form-control">
+                <option value="0" {{ isset($paymentGateway['Chapa']['status']) && $paymentGateway['Chapa']['status'] == 0 ? 'selected' : '' }}>{{ __('Disable') }}</option>
+                <option value="1" {{ isset($paymentGateway['Chapa']['status']) && $paymentGateway['Chapa']['status'] == 1 ? 'selected' : '' }}>{{ __('Enable') }}</option>
+            </select>
+        </div>
+        <input type="hidden" name="gateway[Chapa][currency_code]" id="chapa_currency" value="{{ $paymentGateway['Chapa']['currency_code'] ?? '' }}">
+        <div class="form-group col-sm-12 col-md-6">
+            <label for="chapa_api_key">{{ __('Chapa API Key') }} <span class="text-danger">*</span></label>
+            <input type="text" name="gateway[Chapa][api_key]" id="chapa_api_key" class="form-control" placeholder="Chapa API Key" value="{{ $paymentGateway['Chapa']['api_key'] ?? '' }}">
+        </div>
+        <div class="form-group col-sm-12 col-md-6">
+            <label for="chapa_secret_key">{{ __('Chapa Secret Key') }} <span class="text-danger">*</span></label>
+            <input type="text" name="gateway[Chapa][secret_key]" id="chapa_secret_key" class="form-control" placeholder="Chapa Secret Key" value="{{ $paymentGateway['Chapa']['secret_key'] ?? '' }}">
+        </div>
+        <div class="form-group col-sm-12 col-md-6">
+            <label for="chapa_webhook_secret">{{ __('Chapa Webhook Secret') }} <span class="text-danger">*</span></label>
+            <input type="text" name="gateway[Chapa][webhook_secret_key]" id="chapa_webhook_secret" class="form-control" placeholder="Chapa Webhook Secret" value="{{ $paymentGateway['Chapa']['webhook_secret_key'] ?? '' }}">
+        </div>
+        @if (Auth::user()->school_id)
+            <div class="form-group col-sm-12 col-md-6">
+                <label for="chapa_webhook_url">{{ __('Chapa Webhook URL') }}</label>
+                <input type="text" name="gateway[Chapa][webhook_url]" id="chapa_webhook_url" class="form-control" placeholder="Chapa Webhook URL" readonly value="{{ url('webhook/chapa') }}">
+            </div>
+        @else
+            <div class="form-group col-sm-12 col-md-6">
+                <label for="chapa_webhook_url">{{ __('Chapa Webhook URL') }}</label>
+                <input type="text" name="gateway[Chapa][webhook_url]" id="chapa_webhook_url" class="form-control" placeholder="Chapa Webhook URL" readonly value="{{ url('subscription/webhook/chapa') }}">
+            </div>
+        @endif
+    </div>
+</div>
+
 {{-- Bank transfer --}}
 {{-- <div class="border border-secondary rounded-lg mb-3">
 

@@ -388,6 +388,10 @@ class SystemSettingsController extends Controller {
             'gateway.Flutterwave.api_key' => 'required_if:gateway.Flutterwave.status,1',
             'gateway.Flutterwave.secret_key' => 'required_if:gateway.Flutterwave.status,1',
             'gateway.Flutterwave.webhook_secret_key' => 'required_if:gateway.Flutterwave.status,1',
+            'gateway.Chapa.status' => 'required|boolean',
+            'gateway.Chapa.api_key' => 'required_if:gateway.Chapa.status,1',
+            'gateway.Chapa.secret_key' => 'required_if:gateway.Chapa.status,1',
+            'gateway.Chapa.webhook_secret_key' => 'required_if:gateway.Chapa.status,1',
         ], [
             'gateway.Stripe.api_key.required_if' => trans('The Stripe Publishable Key is required when Stripe is enabled'),
             'gateway.Stripe.secret_key.required_if' => trans('The Stripe Secret Key is required when Stripe is enabled'),
@@ -405,6 +409,10 @@ class SystemSettingsController extends Controller {
             'gateway.Flutterwave.api_key.required_if' => trans('The Flutterwave API Key is required when Flutterwave is enabled'),
             'gateway.Flutterwave.secret_key.required_if' => trans('The Flutterwave Secret Key is required when Flutterwave is enabled'),
             'gateway.Flutterwave.webhook_secret_key.required_if' => trans('The Flutterwave Webhook Secret is required when Flutterwave is enabled'),
+            
+            'gateway.Chapa.api_key.required_if' => trans('The Chapa API Key is required when Chapa is enabled'),
+            'gateway.Chapa.secret_key.required_if' => trans('The Chapa Secret Key is required when Chapa is enabled'),
+            'gateway.Chapa.webhook_secret_key.required_if' => trans('The Chapa Webhook Secret is required when Chapa is enabled'),
         ]);
         // $request->validate([
         //     'gateway'        => 'required|array',
@@ -413,19 +421,42 @@ class SystemSettingsController extends Controller {
         // ]);
         try {
             DB::beginTransaction();
+            
+            // Save payment configurations
             foreach ($request->gateway as $key => $gateway) {
-                $this->paymentConfiguration->updateOrCreate(['payment_method' => $key], [
-                    'api_key'            => $gateway["api_key"] ?? '',
-                    'secret_key'         => $gateway["secret_key"] ?? '',
-                    'webhook_secret_key' => $gateway["webhook_secret_key"] ?? '',
-                    'status'             => $gateway["status"] ?? '',
-                    'currency_code'      => $gateway["currency_code"] ?? '',
-
-                    'bank_name'          => $gateway["bank_name"] ?? '',
-                    'account_name'       => $gateway["account_name"] ?? '',
-                    'account_no'         => $gateway["account_no"] ?? '',
-                ]);
+                // Save for super admin (global configuration)
+                $this->paymentConfiguration->updateOrCreate(
+                    ['payment_method' => $key, 'school_id' => null], 
+                    [
+                        'api_key'            => $gateway["api_key"] ?? '',
+                        'secret_key'         => $gateway["secret_key"] ?? '',
+                        'webhook_secret_key' => $gateway["webhook_secret_key"] ?? '',
+                        'status'             => $gateway["status"] ?? '',
+                        'currency_code'      => $gateway["currency_code"] ?? '',
+                        'bank_name'          => $gateway["bank_name"] ?? '',
+                        'account_name'       => $gateway["account_name"] ?? '',
+                        'account_no'         => $gateway["account_no"] ?? '',
+                    ]
+                );
+                
+                // If user is school admin, also save school-specific configuration
+                if (Auth::user()->hasRole('School Admin') && Auth::user()->school_id) {
+                    $this->paymentConfiguration->updateOrCreate(
+                        ['payment_method' => $key, 'school_id' => Auth::user()->school_id], 
+                        [
+                            'api_key'            => $gateway["api_key"] ?? '',
+                            'secret_key'         => $gateway["secret_key"] ?? '',
+                            'webhook_secret_key' => $gateway["webhook_secret_key"] ?? '',
+                            'status'             => $gateway["status"] ?? '',
+                            'currency_code'      => $gateway["currency_code"] ?? '',
+                            'bank_name'          => $gateway["bank_name"] ?? '',
+                            'account_name'       => $gateway["account_name"] ?? '',
+                            'account_no'         => $gateway["account_no"] ?? '',
+                        ]
+                    );
+                }
             }
+
             if (Auth::user()->hasRole('Super Admin')) {
                 $this->systemSettings->upsert([
                     ["name" => 'currency_code',
@@ -468,6 +499,14 @@ class SystemSettingsController extends Controller {
                         'FLUTTERWAVE_SECRET_KEY' => trim($request->gateway['Flutterwave']['secret_key']),
                         'FLUTTERWAVE_WEBHOOK_SECRET' => trim($request->gateway['Flutterwave']['webhook_secret_key']),
                         'FLUTTERWAVE_WEBHOOK_URL' => trim($request->gateway['Flutterwave']['webhook_url']),
+                    ]);
+                } 
+                else if($request->gateway['Chapa']['status'] == 1) { 
+                    $env_update = changeEnv([
+                        'CHAPA_API_KEY' => trim($request->gateway['Chapa']['api_key']),
+                        'CHAPA_SECRET_KEY' => trim($request->gateway['Chapa']['secret_key']),
+                        'CHAPA_WEBHOOK_SECRET' => trim($request->gateway['Chapa']['webhook_secret_key']),
+                        'CHAPA_WEBHOOK_URL' => trim($request->gateway['Chapa']['webhook_url'] ?? ""),
                     ]);
                 } 
 

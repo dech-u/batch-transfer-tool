@@ -135,6 +135,8 @@ class SubscriptionController extends Controller
                 return $this->subscriptionService->paystack_payment(null, $request->package_id, $request->type, null, null);
             } else if ($request->payment_method == 'flutterwave') {
                 return $this->subscriptionService->flutterwave_payment(null, $request->package_id, $request->type, null, null);
+            } else if ($request->payment_method == 'chapa') {
+                return $this->subscriptionService->chapa_payment(null, $request->package_id, $request->type, null, null);
             }
         } catch (\Throwable $th) {
             return redirect()->back()->with('error', trans('server_not_responding'));
@@ -238,6 +240,8 @@ class SubscriptionController extends Controller
                 return $this->subscriptionService->paystack_payment(null, $package_id, $type, null, $isCurrentPlan);
             } else if ($paymentConfiguration->payment_method == 'Flutterwave') {
                 return $this->subscriptionService->flutterwave_payment(null, $package_id, $type, null, $isCurrentPlan);
+            } else if ($paymentConfiguration->payment_method == 'Chapa') {
+                return $this->subscriptionService->chapa_payment(null, $package_id, $type, null, $isCurrentPlan);
             }
             
             
@@ -1349,6 +1353,8 @@ class SubscriptionController extends Controller
                 return $this->subscriptionService->paystack_payment(null, $package_id, $type, $subscription_id);
             } else if ($paymentConfiguration->payment_method == 'Flutterwave') {
                 return $this->subscriptionService->flutterwave_payment(null, $package_id, $type, $subscription_id);
+            } else if ($paymentConfiguration->payment_method == 'Chapa') {
+                return $this->subscriptionService->chapa_payment(null, $package_id, $type, $subscription_id);
             }
 
             // DB::commit();
@@ -1515,6 +1521,19 @@ class SubscriptionController extends Controller
         } catch (\Throwable $th) {
             return $th;
         }
+    }
+
+    public function paymentReceipt(Request $request)
+    {
+        $tx_ref = $request->query('tx_ref');
+        if (!$tx_ref) {
+            return redirect()->route('subscription.index')->with('error', 'No transaction reference provided.');
+        }
+        $transaction = PaymentTransaction::where('order_id', $tx_ref)->first();
+        if (!$transaction) {
+            return redirect()->route('subscription.index')->with('error', 'Transaction not found.');
+        }
+        return view('subscription.payment_receipt', compact('transaction'));
     }
 
 }

@@ -96,7 +96,6 @@
     let time_format = '{{ $schoolSettings['time_format'] ?? $systemSettings['time_format'] ?? "h:i A" }}'.replace('h', 'hh').replace('H', 'HH').replace('i', 'mm').replace('a', 'a').replace('A', 'A');
     
     setTimeout(() => {
-        
         $(document).ready(function() {
             var targetNode = document.querySelector('thead');
 
@@ -113,8 +112,10 @@
                 }
             });
 
-            // Start observing the target node for configured mutations
-            observer.observe(targetNode, { childList: true, subtree: true });
+            // Only observe if targetNode exists
+            if (targetNode) {
+                observer.observe(targetNode, { childList: true, subtree: true });
+            }
         });
 
     }, 500);

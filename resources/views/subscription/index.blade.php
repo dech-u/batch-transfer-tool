@@ -171,6 +171,17 @@
                                                                     {{-- <input class="btn btn-theme payment-status" type="submit" value={{ __('Flutterwave') }} /> --}}
                                                                     <button class="btn btn-theme w-100" id="flutterwave-button-{{ $package->id }}">{{ __('update_current_plan') }}</button>
                                                                 </form>
+                                                            @elseif ($paymentConfiguration && $paymentConfiguration->payment_method == 'Chapa' && $package->type == 0)
+                                                                <form class="" action="{{ route('subscriptions.store') }}" novalidate="novalidate" data-chapa-publishable-key="{{ $paymentConfiguration->api_key ?? null }}" data-success-function="formSuccessFunction" method="post">
+                                                                    @csrf
+                                                                    <input type="hidden" name="payment_method" value="chapa">
+                                                                    <input type="hidden" name="package_id" class="package_id_{{ $package->id }}" value="{{ $package->id }}">
+                                                                    <input type="hidden" name="amount" class="bill_amount" value="{{ $package->charges }}">
+                                                                    <input type="hidden" name="type" class="type" value="package">
+                                                                    <input type="hidden" name="package_type" class="package_type" value="immediate">
+                                                                    <input type="hidden" name="id" id="edit_id">
+                                                                    <button class="btn btn-theme w-100" id="chapa-button-{{ $package->id }}">{{ __('update_current_plan') }}</button>
+                                                                </form>
                                                             @else
                                                                 <a href="#" class="btn start-immediate-plan @if ($package->highlight) btn-success @else btn-primary @endif btn-block" data-type="{{ $package->type }}" data-id="{{ $package->id }}">{{ __('update_current_plan') }}</a>
                                                             @endif                                                   
@@ -234,6 +245,17 @@
                                                         <input type="hidden" name="package_type" class="package_type_{{ $package->id }}" value="new">
 
                                                         <button class="btn btn-theme w-100" type="submit" id="flutterwave-button-{{ $package->id }}">{{ __('get_start') }}</button>
+                                                    </form>
+                                                @elseif ($paymentConfiguration && $paymentConfiguration->payment_method == 'Chapa' && $package->type == 0)
+                                                    <form class="" action="{{ route('subscriptions.store') }}" novalidate="novalidate" data-chapa-publishable-key="{{ $paymentConfiguration->api_key ?? null }}" data-success-function="formSuccessFunction" method="post">
+                                                        @csrf
+                                                        <input type="hidden" name="payment_method" value="chapa">
+                                                        <input type="hidden" name="package_id" class="package_id_{{ $package->id }}" value="{{ $package->id }}">
+                                                        <input type="hidden" name="amount" class="bill_amount" value="{{ $package->charges }}">
+                                                        <input type="hidden" name="type" class="type" value="package">
+                                                        <input type="hidden" name="package_type" class="package_type" value="new">
+                                                        <input type="hidden" name="id" id="edit_id">
+                                                        <button class="btn btn-theme w-100" id="chapa-button-{{ $package->id }}">{{ __('get_start') }}</button>
                                                     </form>
                                                 @else
                                                     <div class="wrapper">

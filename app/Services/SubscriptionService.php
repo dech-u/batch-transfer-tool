@@ -628,6 +628,148 @@ class SubscriptionService
         }
     }
 
+    // Chapa Payment
+    public function chapa_payment($subscriptionBill_id = null, $package_id = null, $type = null, $subscription_id = null, $isCurrentPlan = null)
+    {
+        try {
+            DB::beginTransaction();
+            
+            $settings = app(CachingService::class)->getSystemSettings();
+            $name = '';
+            $amount = 0;
+        
+            if ($subscriptionBill_id) {
+                $subscriptionBill = $this->subscriptionBill->findById($subscriptionBill_id);
+                $name = $subscriptionBill->subscription->name;
+                $amount = $subscriptionBill->amount;
+                $package_id = -1;
+            }
+            
+            if ($package_id != -1) {
+                $package = $this->package->findById($package_id);
+                $name = $package->name;
+                $amount = $package->charges;
+                $subscriptionBill_id = -1;
+            }
+        
+            if ($type == null) {
+                $type = -1;
+            }
+        
+            if (!$subscription_id) {
+                $subscription_id = -1;
+            }
+            if (!$isCurrentPlan) {
+                $isCurrentPlan = -1;
+            }
+        
+            // First try to get payment configuration from main database (global)
+            DB::setDefaultConnection('mysql');
+            $paymentConfiguration = PaymentConfiguration::where('school_id', null)->where('status', 1)->first();
+            
+            // If not found in global config, try school-specific config
+            if (!$paymentConfiguration && Auth::user()->school_id) {
+                // Switch to school database
+                DB::setDefaultConnection('school');
+                $paymentConfiguration = PaymentConfiguration::where('school_id', Auth::user()->school_id)->where('status', 1)->first();
+            }
+            
+            if (!$paymentConfiguration) {
+                \Log::error('Chapa Payment Error: No payment configuration found');
+                return redirect()->back()->with('error', trans('Payment gateway not configured'));
+            }
+            
+            // Check if Chapa is configured
+            if ($paymentConfiguration->payment_method !== 'Chapa') {
+                \Log::error('Chapa Payment Error: Payment method is not Chapa. Current method: ' . $paymentConfiguration->payment_method);
+                return redirect()->back()->with('error', trans('Chapa payment gateway not configured'));
+            }
+            
+            $chapa_secret_key = $paymentConfiguration->secret_key ?? null;
+            $currency = $paymentConfiguration->currency_code ?? 'USD';
+            $checkAmount = $this->checkMinimumAmount(strtoupper($currency), $amount);
+            $amount = (float) str_replace(',', '', number_format($checkAmount, 2));
+
+            if (empty($chapa_secret_key)) {
+                \Log::error('Chapa Payment Error: No API key provided');
+                return redirect()->back()->with('error', trans('No API key provided'));
+            }
+
+            $tx_ref = 'chapa_' . time() . '_' . uniqid();
+            
+            $data = [
+                'amount' => $amount,
+                'currency' => strtoupper($currency),
+                'email' => Auth::user()->email,
+                'first_name' => Auth::user()->full_name,
+                'tx_ref' => $tx_ref,
+                'callback_url' => url('subscription/payment/success'),
+                'return_url' => url('subscription/payment/success'),
+                'customization' => [
+                    'title' => $name,
+                    'description' => 'Subscription payment for ' . $name,
+                ],
+                'meta' => [
+                    'subscription_bill_id' => $subscriptionBill_id,
+                    'package_id' => $package_id,
+                    'type' => $type,
+                    'subscription_id' => $subscription_id,
+                    'is_current_plan' => $isCurrentPlan,
+                    'school_id' => Auth::user()->school_id,
+                    'user_id' => Auth::user()->id,
+                ]
+            ];
+
+            // Create PaymentTransaction before redirecting to Chapa
+            $paymentTransactionData = [
+                'user_id' => Auth::user()->id,
+                'amount' => $amount,
+                'payment_gateway' => 'Chapa',
+                'order_id' => $tx_ref,
+                'payment_status' => 'pending',
+                'school_id' => Auth::user()->school_id,
+                'metadata' => json_encode($data['meta']),
+            ];
+            $paymentTransaction = $this->paymentTransaction->create($paymentTransactionData);
+            \Log::info('Chapa PaymentTransaction created:', [
+                'order_id' => $paymentTransaction->order_id,
+                'id' => $paymentTransaction->id,
+                'tx_ref' => $tx_ref,
+            ]);
+
+            \Log::info('Chapa payment request data: ' . json_encode($data));
+
+            $response = Http::withHeaders([
+                'Authorization' => 'Bearer ' . $chapa_secret_key,
+                'Content-Type' => 'application/json',
+            ])->post('https://api.chapa.co/v1/transaction/initialize', $data);
+                
+            $res = $response->json();
+
+            \Log::info('Chapa response: ' . json_encode($res));
+           
+            if(!$res['status']) {
+                \Log::error('Chapa Payment Error: ' . ($res['message'] ?? 'Unknown error'));
+                DB::commit();
+                return redirect()->back()->with('error', $res['message'] ?? 'Chapa payment failed');
+            }
+
+            if ($res['status']) {
+                DB::commit();
+                return redirect()->away($res['data']['checkout_url'])->with('reload', true)->with('success', trans('The chapa payment has been initiated'));
+            }
+
+            DB::commit();
+            return redirect()->back()->with('error', trans('Chapa payment failed'));
+
+        } catch (\Throwable $th) {
+            \Log::error('Chapa Payment Error: ' . $th->getMessage());
+            \Log::error('Chapa Payment Error Stack: ' . $th->getTraceAsString());
+            DB::rollBack();
+            return redirect()->back()->with('error', trans('server_not_responding'));
+        }
+    }
+
     public function active_subscription($schoolId)
     {
         $today_date = Carbon::now()->format('Y-m-d');

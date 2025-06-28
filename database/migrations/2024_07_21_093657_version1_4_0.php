@@ -466,6 +466,8 @@ return new class extends Migration
             $table->string('bank_name')->nullable(true)->after('webhook_secret_key');
             $table->string('account_name')->nullable(true)->after('bank_name');
             $table->string('account_no')->nullable(true)->after('account_name');
+            $table->string('currency_code')->nullable(true)->after('account_no');
+            $table->string('currency_symbol')->nullable(true)->after('currency_code');
         });
 
         Schema::create('chats', static function (Blueprint $table) {
@@ -788,6 +790,8 @@ return new class extends Migration
             $table->dropColumn('bank_name');
             $table->dropColumn('account_name');
             $table->dropColumn('account_no');
+            $table->dropColumn('currency_code');
+            $table->dropColumn('currency_symbol');
         });
 
         Schema::dropIfExists('chats');

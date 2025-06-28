@@ -34,12 +34,12 @@
                         <div class="card-body">
                             <h4>{{ __('select_zip') }}</h4>
                         
-                            <form class="pt-3 restore-form" id="create-form" action="{{ route('database-backup.restore',$schoolId) }}" method="POST" enctype="multipart/form-data">
+                            <form class="pt-3 restore-form" id="create-form" action="{{ route('database-backup.restore',$schoolId) }}" method="POST" enctype="multipart/form-data" novalidate>
                                 <div class="col-12">
                                     <input type="hidden" name="school_id" value="{{ $schoolId }}">
                                     <div class="form-group">
                                         <label>{{ __('zip_file') }} <span class="text-danger">*</span></label>
-                                        <input type="file" name="zip_file" id="zip_file" class="file-upload-default" accept="zip"/>
+                                        <input type="file" name="zip_file" id="zip_file" class="file-upload-default"/>
                                         <div class="input-group col-xs-12">
                                             <input type="text" class="form-control file-upload-info" disabled="" placeholder="{{ __('zip_file') }}" aria-label=""/>
                                             <span class="input-group-append">

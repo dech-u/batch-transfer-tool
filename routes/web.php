@@ -846,6 +846,7 @@ Route::post('webhook/razorpay', [WebhookController::class, 'razorpay']);
 Route::post('webhook/stripe', [WebhookController::class, 'stripe']);
 Route::post('webhook/paystack',[WebhookController::class,'paystack']);
 Route::post('webhook/flutterwave',[WebhookController::class, 'flutterwave']);
+Route::post('webhook/chapa',[WebhookController::class, 'chapa']);
 // Route::get('response/paystack/success', [WebhookController::class,'paystackSuccessCallback'])->name('paystack.success');
 // Route::get('response/flutterwave/success', [WebhookController::class,'flutterwaveSuccessCallback'])->name('flutterwave.success');
 
@@ -853,6 +854,44 @@ Route::post('subscription/webhook/stripe', [SubscriptionWebhookController::class
 Route::post('subscription/webhook/razorpay', [SubscriptionWebhookController::class, 'razorpay']);
 Route::post('subscription/webhook/paystack', [SubscriptionWebhookController::class, 'paystack']);
 Route::post('subscription/webhook/flutterwave', [SubscriptionWebhookController::class, 'flutterwave']);
+Route::post('subscription/webhook/chapa', [SubscriptionWebhookController::class, 'chapa']);
+
+// Test Chapa API keys
+Route::get('test/chapa', function() {
+    try {
+        // Get Chapa configuration
+        $paymentConfig = \App\Models\PaymentConfiguration::where('payment_method', 'Chapa')
+            ->where('status', 1)
+            ->first();
+            
+        if (!$paymentConfig) {
+            return response()->json(['error' => 'Chapa not configured'], 400);
+        }
+        
+        // Test API call
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'Authorization' => 'Bearer ' . $paymentConfig->secret_key,
+            'Content-Type' => 'application/json',
+        ])->get('https://api.chapa.co/v1/transaction/verify/test');
+        
+        return response()->json([
+            'success' => true,
+            'api_status' => $response->status(),
+            'response' => $response->json(),
+            'config' => [
+                'payment_method' => $paymentConfig->payment_method,
+                'status' => $paymentConfig->status,
+                'currency_code' => $paymentConfig->currency_code
+            ]
+        ]);
+        
+    } catch (\Exception $e) {
+        return response()->json([
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString()
+        ], 500);
+    }
+})->middleware('auth');
 
 // Payment Routes for app
 Route::prefix('payment')->group(function () {
@@ -1025,4 +1064,6 @@ Route::get('demo-tokens', static function () {
         });
     }
 });
+
+Route::get('subscription/payment/receipt', [App\Http\Controllers\SubscriptionController::class, 'paymentReceipt'])->name('subscription.payment.receipt');
 

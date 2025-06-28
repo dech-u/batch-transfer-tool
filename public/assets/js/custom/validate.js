@@ -688,7 +688,7 @@ $('.profile-update-form').validate({
 // THIS FUNCTIONS SHOULD ALWAYS BE AT THE LAST OF THE DOCUMENT
 // OTHERWISE IT WILL CONFLICT THE OTHER VALIDATION FUNCTIONS
 /************ Common Validation ***********/
-let defaultValidationClasses = ['.create-form', '#create-form', '.create-form-without-reset', '.edit-form', '#edit-form','.common-validation'];
+let defaultValidationClasses = ['.create-form-without-reset', '.edit-form', '#edit-form','.common-validation'];
 
 defaultValidationClasses.forEach(function (value, index) {
     $(value).validate({
@@ -737,21 +737,12 @@ $(".online-registration-form").validate({
     }
 });
 
-$(".restore-form").validate({
-    rules: {
-        zip: {
-            required: true,
-            extension: "zip"
-        },
-    },
-
-    success: function (label, element) {
-        success(element);
-    },
-    errorPlacement: function (label, element) {
-        errorPlacement(label, element);
-    },
-    highlight: function (element, errorClass) {
-        highlight(element, errorClass);
-    }
-});
+// $(".restore-form").validate({
+//     rules: {
+//         zip_file: {
+//             required: true,
+//             extension: "zip"
+//         },
+//     },
+//     ...
+// });

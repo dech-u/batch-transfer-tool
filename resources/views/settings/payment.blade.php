@@ -63,6 +63,10 @@
         })
 
         $('#currency_code').on('change', function() {
+            $('#chapa_currency').val($(this).val());
+        })
+
+        $('#currency_code').on('change', function() {
             $('#bank_transfer_currency').val($(this).val());
         })
     </script>

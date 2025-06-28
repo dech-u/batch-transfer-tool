@@ -773,6 +773,88 @@ class SubscriptionWebhookController extends Controller
         }
     }
 
+    public function chapa(Request $request)
+    {
+        Log::info('Chapa Subscription Webhook Called');
+        $payload = @file_get_contents('php://input');
+        Log::info("Chapa Webhook : ", [$payload]);
+
+        // Fix: If $payload is a JSON array with a string, decode twice
+        $data = json_decode($payload, false, 512, JSON_THROW_ON_ERROR);
+        if (is_array($data) && isset($data[0]) && is_string($data[0])) {
+            $data = json_decode($data[0], false, 512, JSON_THROW_ON_ERROR);
+        }
+
+        // Now extract tx_ref as before
+        $tx_ref = $data->tx_ref ?? ($data->data->tx_ref ?? null);
+        $status = $data->status ?? ($data->data->status ?? null);
+        
+        if (!$tx_ref) {
+            Log::error("Chapa Webhook : No transaction reference found");
+            return response()->json(['status' => 'error', 'message' => 'No transaction reference'], 400);
+        }
+        
+        // Find payment transaction
+        Log::info('Chapa Webhook: About to search for transaction', [
+            'tx_ref' => $tx_ref,
+            'connection' => DB::getDefaultConnection(),
+        ]);
+        Log::info('Chapa Webhook: All PaymentTransactions', PaymentTransaction::pluck('order_id')->toArray());
+        DB::setDefaultConnection('mysql');
+        $foundMysql = PaymentTransaction::where('order_id', $tx_ref)->first();
+        DB::setDefaultConnection('school');
+        $foundSchool = PaymentTransaction::where('order_id', $tx_ref)->first();
+        Log::info('Chapa Webhook: Found on mysql?', ['found' => !!$foundMysql]);
+        Log::info('Chapa Webhook: Found on school?', ['found' => !!$foundSchool]);
+        $paymentTransaction = PaymentTransaction::where('order_id', $tx_ref)->first();
+        
+        if (!$paymentTransaction) {
+            Log::error("Chapa Webhook : Payment transaction not found for tx_ref: " . $tx_ref);
+            return response()->json(['status' => 'error', 'message' => 'Transaction not found'], 404);
+        }
+        
+        $metadata = json_decode($paymentTransaction->metadata, true);
+        
+        if ($paymentTransaction->payment_status == "succeed") {
+            Log::info("Chapa Webhook : Transaction Already Successful");
+            return response()->json(['status' => 'success', 'message' => 'Transaction already processed']);
+        }
+        
+        if ($status === 'success') {
+            DB::beginTransaction();
+            try {
+                // Update payment transaction status
+                $paymentTransaction->update(['payment_status' => "succeed"]);
+                
+                // Handle subscription payment based on metadata
+                if (isset($metadata['type']) && $metadata['type'] == 'addon') {
+                    $this->handleAddonPayment($metadata);
+                } else {
+                    $this->handlePackagePayment($metadata);
+                }
+                
+                Log::info('Chapa PaymentTransaction created on connection:', [
+                    'connection' => $paymentTransaction->getConnectionName(),
+                    'order_id' => $paymentTransaction->order_id,
+                ]);
+                
+                DB::commit();
+                Log::info("Chapa Webhook : Subscription payment processed successfully");
+                return response()->json(['status' => 'success', 'message' => 'Payment processed successfully']);
+                
+            } catch (Throwable $e) {
+                DB::rollBack();
+                Log::error("Chapa Webhook Processing Error: " . $e->getMessage());
+                return response()->json(['status' => 'error', 'message' => 'Payment processing failed'], 500);
+            }
+        } else {
+            // Payment failed
+            $paymentTransaction->update(['payment_status' => "failed"]);
+            Log::info("Chapa Webhook : Payment failed");
+            return response()->json(['status' => 'success', 'message' => 'Payment failure recorded']);
+        }
+    }
+
     private function handleAddonPayment($metadata)
     {
         Log::info("Handling addon payment with metadata:", $metadata);

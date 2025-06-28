@@ -30,6 +30,7 @@ class PaymentService {
             'razorpay' => new RazorpayPayment($payment->secret_key, $payment->api_key, $payment->currency_code),
             'flutterwave' => new FlutterwavePayment($payment->secret_key, $payment->api_key, $payment->currency_code),
             'paystack' => new PaystackPayment($payment->secret_key, $payment->api_key, $payment->currency_code),
+            'chapa' => new ChapaPayment($payment->secret_key, $payment->api_key, $payment->currency_code),
 
             // any other payment processor implementations
             default => throw new InvalidArgumentException('Invalid Payment Gateway.'),

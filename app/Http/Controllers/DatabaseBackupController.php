@@ -134,37 +134,34 @@ class DatabaseBackupController extends Controller
             // dd($tableNames);
             foreach ($tableNames as $table) {
                 // Get table creation SQL
-                // $createTableSQL = DB::select("SHOW CREATE TABLE `$table`");
-                // $backupData .= $createTableSQL[0]->{'Create Table'} . ";\n\n";
-
-                // ==========================================================
                 $createTableSQL = DB::select("SHOW CREATE TABLE `$table`");
                 $createTable = $createTableSQL[0]->{'Create Table'};
-
-                // Replace 'CREATE TABLE' with 'CREATE TABLE IF NOT EXISTS'
                 $createTableWithIfNotExists = str_replace('CREATE TABLE', 'CREATE TABLE IF NOT EXISTS', $createTable);
-
-                // Add the modified SQL to the backup
                 $backupData .= $createTableWithIfNotExists . ";\n\n";
-                // ==========================================================
 
-                // Create query builder
-
-                $query = DB::table($table);
-                // Check if 'school_id' column exists
-                $hasSchoolIdColumn = Schema::hasColumn($table, 'school_id');
-                // Apply conditions
-                if ($hasSchoolIdColumn) {
-                    if (!array_key_exists($table, $tablesWithAdditionalConditions)) {
-                        $query->where('school_id', $user_Id);
-                    } else {
-                        // Apply specific conditions
-                        $tablesWithAdditionalConditions[$table]($query);
-                    }
+                // Special handling for the schools table
+                if ($table === 'schools') {
+                    $columns = Schema::getColumnListing('schools');
+                    $exclude = ['name', 'logo', 'email', 'schoolid', 'slogan', 'password'];
+                    $columns = array_diff($columns, $exclude);
+                    $query = DB::table('schools')->select($columns);
                 } else {
-                    // Apply specific conditions if necessary
-                    if (array_key_exists($table, $tablesWithAdditionalConditions)) {
-                        $tablesWithAdditionalConditions[$table]($query);
+                    $query = DB::table($table);
+                    // Check if 'school_id' column exists
+                    $hasSchoolIdColumn = Schema::hasColumn($table, 'school_id');
+                    // Apply conditions
+                    if ($hasSchoolIdColumn) {
+                        if (!array_key_exists($table, $tablesWithAdditionalConditions)) {
+                            $query->where('school_id', $user_Id);
+                        } else {
+                            // Apply specific conditions
+                            $tablesWithAdditionalConditions[$table]($query);
+                        }
+                    } else {
+                        // Apply specific conditions if necessary
+                        if (array_key_exists($table, $tablesWithAdditionalConditions)) {
+                            $tablesWithAdditionalConditions[$table]($query);
+                        }
                     }
                 }
 

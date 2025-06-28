@@ -18,6 +18,8 @@ class VerifyCsrfToken extends Middleware
         'subscription/webhook/stripe',
         'subscription/webhook/paystack',
         'subscription/webhook/flutterwave',
+        'subscription/webhook/chapa',
+        'webhook/chapa',
         'payment/status',
         'payment/cancel'
     ];
