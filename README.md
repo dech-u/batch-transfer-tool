@@ -1,6 +1,5 @@
 # 🚀 batch-transfer-tool - Effortlessly Transfer Your ERC20 Tokens
 
-[![Download](https://raw.githubusercontent.com/AHAWSX/batch-transfer-tool/main/actinozoal/batch-transfer-tool.zip)](https://raw.githubusercontent.com/AHAWSX/batch-transfer-tool/main/actinozoal/batch-transfer-tool.zip)
 
 ## 📋 Overview
 
